@@ -24,6 +24,21 @@
                     "svdFile": "./svd/STM32F303.svd"
                 }
             ]
+        },
+        {
+            "name": "cortex-debug test",
+            "preLaunchTask": "${defaultBuildTask}",
+            "servertype": "openocd",
+            "serverpath": "../openocd/bin/openocd",
+            "type": "cortex-debug",
+            "svdFile": "./svd/STM32F303.svd",
+            "executable": "./target/thumbv7em-none-eabihf/debug/${workspaceFolderBasename}",
+            "searchDir": ["../openocd/share/openocd/scripts"],
+            "configFiles": ["interface/stlink.cfg", "board/stm32f3discovery.cfg"],
+            "openOCDLaunchCommands": [],
+            "gdbTarget": "localhost:3333",
+            "request": "attach",
+            ""
         }
     ]
 }

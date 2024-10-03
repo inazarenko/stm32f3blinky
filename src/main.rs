@@ -11,7 +11,7 @@ use {defmt_rtt as _, panic_probe as _};
 async fn main(_spawner: Spawner) {
     let p = embassy_stm32::init(Default::default());
 
-    let mut led = Output::new(p.PE10, Level::High, Speed::Low);
+    let mut led = Output::new(p.PE11, Level::High, Speed::Low);
 
     loop {
         led.set_high();
