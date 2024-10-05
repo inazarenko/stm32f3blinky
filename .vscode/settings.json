@@ -1,4 +1,3 @@
 {
     "rust-analyzer.check.allTargets": false,
-    "cortex-debug.armToolchainPath": "C:/PF/arm-toolchain/bin"
 }
