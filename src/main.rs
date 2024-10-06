@@ -17,11 +17,17 @@ async fn play_circle(leds: &mut [Output<'_>], btn: &mut ExtiInput<'_>) {
             if let Ok(_) =
                 with_timeout(Duration::from_millis(1000), btn.wait_for_falling_edge()).await
             {
-                info!("button pressed");
+                info!("button pressed, disabling");
                 return;
             }
         }
         info!("circle done");
+    }
+}
+
+fn set_all_leds(leds: &mut [Output<'_>], level: Level) {
+    for led in leds.iter_mut() {
+        led.set_level(level);
     }
 }
 
@@ -46,14 +52,6 @@ fn fast_config() -> embassy_stm32::Config {
 async fn main(_spawner: Spawner) {
     let p = embassy_stm32::init(embassy_stm32::Config::default());
 
-    let mut cps = cortex_m::peripheral::Peripherals::take().unwrap();
-    cps.DCB.enable_trace();
-    cps.DWT.enable_cycle_counter();
-    let before = cortex_m::peripheral::DWT::cycle_count();
-    Timer::after_millis(100).await;
-    let after = cortex_m::peripheral::DWT::cycle_count();
-    info!("Mcycles/s: {}", (after - before + 49_999) / 100_000);
-
     let led_pins = [
         p.PE9.degrade(),
         p.PE10.degrade(),
@@ -69,9 +67,14 @@ async fn main(_spawner: Spawner) {
 
     loop {
         play_circle(&mut leds, &mut btn).await;
-        for led in leds.iter_mut() {
-            led.set_low();
-        }
+        set_all_leds(&mut leds, Level::Low);
         btn.wait_for_falling_edge().await;
+        info!("button pressed, enabling");
+        for _ in 0..5 {
+            set_all_leds(&mut leds, Level::High);
+            Timer::after(Duration::from_millis(200)).await;
+            set_all_leds(&mut leds, Level::Low);
+            Timer::after(Duration::from_millis(200)).await;
+        }
     }
 }
